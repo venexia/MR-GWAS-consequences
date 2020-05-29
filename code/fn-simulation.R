@@ -57,7 +57,7 @@ simulation <- function(name,seed,N,snps,alpha1,alpha2,beta1,beta2,treat,c_mean,c
   
   # Summary table -------------------------------------------------------------
   
-  s <- df[,-c(1:200)]
+  s <- df[,-c(1:snps)]
   
   # Split sample --------------------------------------------------------------
   
