@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+raw/
+data/
+code/specify_paths.R
+output/
+tmp/
+*.Rproj
