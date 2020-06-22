@@ -7,104 +7,54 @@ source("code/specify_paths.R", echo = TRUE)
 
 # Load data
 
-df <- NULL
+df <- data.table::fread("output/simulation.csv", 
+                        data.table = FALSE,
+                        select = c("model","z1_ab","_LCI","_UCI","_WT"),
+                        stringsAsFactors = FALSE)
 
-for (c in c("pos","neg")) {
-  for (t in c("pos","neg")) {
-    tmp <- data.table::fread(paste0("output/simulation_results-c_",c,"_t_",t,".csv"), data.table = FALSE)
-    tmp$covariate <- c
-    tmp$treatment <- t
-    df <- rbind(df,tmp)
-  }
-}
+df <- df[df$model!="",]
+colnames(df) <- c("model","meta","lci","uci","weight")
+df$estimate <- paste0(sprintf("%.2f",df$meta)," (95% CI: ",sprintf("%.2f",df$lci)," to ",sprintf("%.2f",df$uci),")")
 
-# Save truth
+# Label exposures 
 
-truth <- df[df$covariate=="pos" & df$treatment=="pos" & df$outcome=="y" & df$analysis=="Truth (s)",]$b
-df <- df[df$analysis=="MR",]
-  
-# Create estimate labels
-
-df$exposure <- ifelse(df$exposure=="xt" & df$treatment=="pos","xt+",df$exposure)
-df$exposure <- ifelse(df$exposure=="xt" & df$treatment=="neg","xt-",df$exposure)
-df$exposure <- ifelse(df$exposure=="xtc" & df$treatment=="pos","xt+c",df$exposure)
-df$exposure <- ifelse(df$exposure=="xtc" & df$treatment=="neg","xt-c",df$exposure)
-df$treatment <- NULL
-
-df$covariate <- ifelse(df$covariate=="pos","Positive covariate",df$covariate)
-df$covariate <- ifelse(df$covariate=="neg","Negative covariate",df$covariate)
-
-df <- unique(df)
-
-df$estimate <- paste0(sprintf("%.2f",exp(df$b))," (95% CI: ",sprintf("%.2f",exp(df$lci))," to ",sprintf("%.2f",exp(df$uci)),")")
-
-# Create exposure labels
-
-labels <- data.frame(rbind(c("x","No adjustment, correction or selection"),
-                           c("xt+","Correction for medication use\n(medication increases exposure)"),
-                           c("xt-","Correction for medication use\n(medication decreases exposure)"),
-                           c("xr","Selection on medication users"),
-                           c("xc","Adjustment for the covariate"),
-                           c("xt+c","Adjustment for the covariate and\ncorrection for medication use\n(medication increases exposure)"),
-                           c("xt-c","Adjustment for the covariate and\ncorrection for medication use\n(medication decreases exposure)"),
-                           c("xrc","Adjustment for the covariate and\nselection on medication users")),
+labels <- data.frame(rbind(c("z0_ab","Model 0\nNo adjustment, correction or selection"),
+                           c("z1_ab","Model 1\nAdjustment for a covariate"),
+                           c("z2_ab","Model 2\nCorrection for medication use"),
+                           c("z3_ab","Model 3\nSelection on medication users"),
+                           c("z4_ab","Model 4\nAdjustment for a covariate and\ncorrection for medication use"),
+                           c("z5_ab","Model 5\nAdjustment for a covariate and\nselection on medication users")),
                      stringsAsFactors = FALSE)
 
-colnames(labels) <- c("exposure","exposure_long")
+colnames(labels) <- c("model","model_long")
 
-df <- merge(df,labels,by = c("exposure"), all.x = TRUE)
+df <- merge(df,labels,by = c("model"), all.x = TRUE)
 
-df$exposure_long <- ifelse(!is.na(df$exposure_long),paste0(df$exposure_long,"\n",df$estimate),NA)
+df$model_long <- ifelse(!is.na(df$model_long),paste0(df$model_long,"\n",df$estimate),NA)
 
-df$exposure_long <- factor(df$exposure_long)
-df$exposure_long <- factor(df$exposure_long,levels(df$exposure_long)[c(1:2,9:10,3:4,11:12,5:6,15:16,7:8,13:14)])
+# Plot 
 
-# Plot results for positive covariate
-
-ggplot(df[df$covariate=="Positive covariate" & df$outcome=="y",], aes(y = exp(b), x = exposure_long)) +
-  geom_hline(yintercept = round(exp(truth),2), linetype = "dotted", color = "black") +
-  geom_point() + 
-  geom_errorbar(aes(ymin = exp(lci), ymax = exp(uci)), width = 0) +
-  labs(title = "", x = "Phenotype A genetic associations",
-       y = paste0("Odds ratio and 95% confidence interval for the effect of\na unit change in phenotype A on phenotype B\nwhere the dotted line represents the true effect")) +
-  scale_y_continuous(trans = "log", limits = c(1.5,2.5), breaks = round(c(exp(truth),seq(1.6,2.4,0.2)),2)) +
-  guides(col = guide_legend(ncol=1)) +
-  theme_minimal() +
-  theme(axis.text = element_text(size=10),
-        axis.ticks = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.y = element_blank(),
-        text = element_text(size=10),
-        legend.title = element_blank(),
-        legend.text = element_text(size=8),
+ggplot2::ggplot(df, ggplot2::aes(y = meta, x = forcats::fct_rev(model_long))) +
+  ggplot2::geom_hline(yintercept = 0, linetype = "solid", color = "darkgray") +
+  ggplot2::geom_linerange(ggplot2::aes(ymin = meta-1e-3, ymax = meta+1e-3), alpha = 1, size = 2, color = "darkgray") +
+  ggplot2::geom_linerange(ggplot2::aes(ymin = lci, ymax = uci), alpha = 0.5, size = 2, color = "darkgray") +
+  ggplot2::scale_y_continuous(lim = c(-0.1,0.7), breaks = seq(-0.1,0.7,0.1)) +
+  ggplot2::labs(title = "", 
+                x = "",
+                y = "Scaled difference between the truth and the\nsimulation, meta-analysed across effect sizes") +
+  ggplot2::guides(col = ggplot2::guide_legend(ncol=1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.text = ggplot2::element_text(size=10),
+        axis.ticks = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank(),
+        panel.grid.major.y = ggplot2::element_blank(),
+        text = ggplot2::element_text(size=10),
+        legend.title = ggplot2::element_blank(),
+        legend.text = ggplot2::element_text(size=8),
         legend.position = "bottom",
-        legend.key.width = unit(0.1,"cm"),
-        legend.box.background = element_rect(colour = "dark grey")) +
-  coord_flip() 
+        legend.key.width = ggplot2::unit(0.1,"cm"),
+        legend.box.background = ggplot2::element_rect(colour = "dark grey"),
+        strip.text = ggplot2::element_blank()) +
+  ggplot2::coord_flip()
 
-# Plot results for negative covariate
-
-ggsave("output/simulation_poscovar.jpeg",width = 300, height = 175, unit = "mm", dpi = 600)
-
-ggplot(df[df$covariate=="Negative covariate" & df$outcome=="y",], aes(y = exp(b), x = exposure_long)) +
-  geom_hline(yintercept = round(exp(truth),2), linetype = "dotted", color = "black") +
-  geom_point() + 
-  geom_errorbar(aes(ymin = exp(lci), ymax = exp(uci)), width = 0) +
-  labs(title = "", x = "Phenotype A genetic associations",
-       y = paste0("Odds ratio and 95% confidence interval for the effect of\na unit change in phenotype A on phenotype B\nwhere the dotted line represents the true effect")) +
-  scale_y_continuous(trans = "log", limits = c(1.5,2.5), breaks = round(c(exp(truth),seq(1.6,2.4,0.2)),2)) +
-  guides(col = guide_legend(ncol=1)) +
-  theme_minimal() +
-  theme(axis.text = element_text(size=10),
-        axis.ticks = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.y = element_blank(),
-        text = element_text(size=10),
-        legend.title = element_blank(),
-        legend.text = element_text(size=8),
-        legend.position = "bottom",
-        legend.key.width = unit(0.1,"cm"),
-        legend.box.background = element_rect(colour = "dark grey")) +
-  coord_flip() 
-
-ggsave("output/simulation_negcovar.jpeg",width = 300, height = 175, unit = "mm", dpi = 600)
+ggplot2::ggsave("output/simulation.jpeg",width = 300, height = 150, unit = "mm", dpi = 600)

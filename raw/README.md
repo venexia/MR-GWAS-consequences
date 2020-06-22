@@ -1,0 +1,1 @@
+This directory contains raw data associated with the project.
