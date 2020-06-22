@@ -1,0 +1,1 @@
+This directory contains output associated with the project.

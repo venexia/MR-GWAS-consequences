@@ -11,4 +11,4 @@ tmp/
 *.Rproj
 !raw/README.md
 !data/README.md
-output/README.md
+!output/README.md
