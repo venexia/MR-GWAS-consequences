@@ -7,7 +7,7 @@ This repository contains the code to reproduce the analysis from the following p
 ## Using this code
 
 - The packages necessary to run this code are listed in ’dependency.R’. 
-- You will need to update the script ’specify_paths_example.R’ to include the file paths to your copy of the data and save the edited script as ‘specify_paths.R’.
+- You will need to update the script ’specify_paths_example.R’ to include the file paths to your copy of the GWAS data and save the edited script as ‘specify_paths.R’.
 - The code expects to run in a directory with subdirectories 'code' (containing scripts), 'raw' (containing raw data), 'data' (where processed data are placed), and 'output' (where results are placed). 
 
 ## Availability of data
