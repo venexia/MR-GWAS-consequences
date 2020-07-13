@@ -2,7 +2,7 @@
 
 This repository contains the code to reproduce the analysis from the following paper:
   
-  Walker, V., Carter, A., Gill, D., Harrison, S., Tzoulaki, S., & Davies, N. (2020). The consequences of accounting for treatment in genome-wide association studies used for two-sample Mendelian randomization
+  Walker, V., Harrison, S., Carter, A., Gill, D., Tzoulaki, S., & Davies, N. (2020). The consequences of accounting for treatment in genome-wide association studies used for two-sample Mendelian randomization
 
 ## Using this code
 
@@ -16,4 +16,4 @@ The data used in this project are available on application from UK Biobank.
 
 ## Further information
 
-If you would like any further information, please contact venexia.walker@bristol.ac.uk. 
+If you would like any further information, please contact venexia.walker@bristol.ac.uk.
