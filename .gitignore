@@ -5,10 +5,8 @@
 raw/*
 data/*
 code/specify_paths.R
-output/*
 documents/*
 tmp/
 *.Rproj
 !raw/README.md
 !data/README.md
-!output/README.md

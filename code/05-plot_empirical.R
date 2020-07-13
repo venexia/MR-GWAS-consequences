@@ -40,7 +40,7 @@ df$exposure_long <- ifelse(!is.na(df$exposure_long),paste0(df$exposure_long,"\n"
 
 ggplot2::ggplot(df, ggplot2::aes(y = exp(b), x = forcats::fct_rev(exposure_long))) +
   ggplot2::geom_hline(yintercept = 1, linetype = "solid", color = "darkgray") +
-  ggplot2::geom_linerange(ggplot2::aes(ymin = exp(b)-1e-3, ymax = exp(b)+1e-3), alpha = 1, size = 2, color = "darkgray") +
+  ggplot2::geom_linerange(ggplot2::aes(ymin = exp(b)-1e-3, ymax = exp(b)+1e-3), alpha = 1, size = 2, color = "black") +
   ggplot2::geom_linerange(ggplot2::aes(ymin = exp(lci), ymax = exp(uci)), alpha = 0.5, size = 2, color = "darkgray") +
   ggplot2::labs(title = "", 
                 x = "",
@@ -61,6 +61,7 @@ ggplot2::ggplot(df, ggplot2::aes(y = exp(b), x = forcats::fct_rev(exposure_long)
         strip.text = ggplot2::element_blank()) +
   ggplot2::coord_flip()
 
-ggplot2::ggsave("output/empirical.jpeg",
-                width = 300, height = 150,
-                unit = "mm", dpi = 600)
+ggplot2::ggsave("output/Figure4.tiff",
+                width = 174, height = 120, 
+                unit = "mm", dpi = 600,
+                scale = 1.1)

@@ -1,7 +1,3 @@
-* Set working directory 
-
-cd "C:\Users\aw15952\OneDrive - University of Bristol\Papers\BPAdjustments"
-
 log using MR-GWAS-consequences
 
 * 21 simulations for different effects of phenotype A on phenotype B

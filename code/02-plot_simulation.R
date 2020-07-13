@@ -14,7 +14,14 @@ df <- data.table::fread("output/simulation.csv",
 
 df <- df[df$model!="",]
 colnames(df) <- c("model","meta","lci","uci","weight")
-df$estimate <- paste0(sprintf("%.2f",df$meta)," (95% CI: ",sprintf("%.2f",df$lci)," to ",sprintf("%.2f",df$uci),")")
+
+# Make percentages
+
+df$meta <- 100*df$meta
+df$lci <- 100*df$lci
+df$uci <- 100*df$uci
+
+df$estimate <- paste0(sprintf("%.0f",df$meta),"% (95% CI: ",sprintf("%.0f",df$lci)," to ",sprintf("%.0f",df$uci),")")
 
 # Label exposures 
 
@@ -32,16 +39,18 @@ df <- merge(df,labels,by = c("model"), all.x = TRUE)
 
 df$model_long <- ifelse(!is.na(df$model_long),paste0(df$model_long,"\n",df$estimate),NA)
 
+
+
 # Plot 
 
 ggplot2::ggplot(df, ggplot2::aes(y = meta, x = forcats::fct_rev(model_long))) +
   ggplot2::geom_hline(yintercept = 0, linetype = "solid", color = "darkgray") +
-  ggplot2::geom_linerange(ggplot2::aes(ymin = meta-1e-3, ymax = meta+1e-3), alpha = 1, size = 2, color = "darkgray") +
+  ggplot2::geom_linerange(ggplot2::aes(ymin = meta-0.1, ymax = meta+0.1), alpha = 1, size = 2, color = "black") +
   ggplot2::geom_linerange(ggplot2::aes(ymin = lci, ymax = uci), alpha = 0.5, size = 2, color = "darkgray") +
-  ggplot2::scale_y_continuous(lim = c(-0.1,0.7), breaks = seq(-0.1,0.7,0.1)) +
+  ggplot2::scale_y_continuous(lim = c(-10,70), breaks = seq(-10,70,10)) +
   ggplot2::labs(title = "", 
                 x = "",
-                y = "Scaled difference between the truth and the\nsimulation, meta-analysed across effect sizes") +
+                y = "Percentage difference between the estimates and the simulated true\neffect of unmeasured A on B, scaled and meta-analysed across effect sizes") +
   ggplot2::guides(col = ggplot2::guide_legend(ncol=1)) +
   ggplot2::theme_minimal() +
   ggplot2::theme(axis.text = ggplot2::element_text(size=10),
@@ -57,4 +66,7 @@ ggplot2::ggplot(df, ggplot2::aes(y = meta, x = forcats::fct_rev(model_long))) +
         strip.text = ggplot2::element_blank()) +
   ggplot2::coord_flip()
 
-ggplot2::ggsave("output/simulation.jpeg",width = 300, height = 150, unit = "mm", dpi = 600)
+ggplot2::ggsave("output/Figure3.tiff",
+                width = 174, height = 120, 
+                unit = "mm", dpi = 600,
+                scale = 1.1)
