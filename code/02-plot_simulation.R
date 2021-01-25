@@ -9,7 +9,7 @@ source("code/specify_paths.R", echo = TRUE)
 
 df <- data.table::fread("output/simulation.csv", 
                         data.table = FALSE,
-                        select = c("model","z1_ab","_LCI","_UCI","_WT"),
+                        select = c("model","z1_mb","_LCI","_UCI","_WT"),
                         stringsAsFactors = FALSE)
 
 df <- df[df$model!="",]
@@ -25,12 +25,12 @@ df$estimate <- paste0(sprintf("%.0f",df$meta),"% (95% CI: ",sprintf("%.0f",df$lc
 
 # Label exposures 
 
-labels <- data.frame(rbind(c("z0_ab","Model 0\nNo adjustment, correction or selection"),
-                           c("z1_ab","Model 1\nAdjustment for a covariate"),
-                           c("z2_ab","Model 2\nCorrection for medication use"),
-                           c("z3_ab","Model 3\nSelection on medication users"),
-                           c("z4_ab","Model 4\nAdjustment for a covariate and\ncorrection for medication use"),
-                           c("z5_ab","Model 5\nAdjustment for a covariate and\nselection on medication users")),
+labels <- data.frame(rbind(c("z0_mb","Model 0\nNo adjustment, correction or selection"),
+                           c("z1_mb","Model 1\nAdjustment for a covariate"),
+                           c("z2_mb","Model 2\nCorrection for medication use"),
+                           c("z3_mb","Model 3\nSelection on medication users"),
+                           c("z4_mb","Model 4\nAdjustment for a covariate and\ncorrection for medication use"),
+                           c("z5_mb","Model 5\nAdjustment for a covariate and\nselection on medication users")),
                      stringsAsFactors = FALSE)
 
 colnames(labels) <- c("model","model_long")
@@ -68,5 +68,5 @@ ggplot2::ggplot(df, ggplot2::aes(y = meta, x = forcats::fct_rev(model_long))) +
 
 ggplot2::ggsave("output/Figure3.tiff",
                 width = 174, height = 120, 
-                unit = "mm", dpi = 600,
+                unit = "mm", dpi = 320,
                 scale = 1.1)
