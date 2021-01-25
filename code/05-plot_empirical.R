@@ -61,7 +61,7 @@ ggplot2::ggplot(df, ggplot2::aes(y = exp(b), x = forcats::fct_rev(exposure_long)
         strip.text = ggplot2::element_blank()) +
   ggplot2::coord_flip()
 
-ggplot2::ggsave("output/Figure4.jpeg",
+ggplot2::ggsave("output/Figure4.jpg",
                 width = 174, height = 120, 
                 unit = "mm", dpi = 320,
                 scale = 1.1)
