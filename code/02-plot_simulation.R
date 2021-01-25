@@ -66,7 +66,7 @@ ggplot2::ggplot(df, ggplot2::aes(y = meta, x = forcats::fct_rev(model_long))) +
         strip.text = ggplot2::element_blank()) +
   ggplot2::coord_flip()
 
-ggplot2::ggsave("output/Figure3.tiff",
+ggplot2::ggsave("output/Figure3.jpg",
                 width = 174, height = 120, 
                 unit = "mm", dpi = 320,
                 scale = 1.1)

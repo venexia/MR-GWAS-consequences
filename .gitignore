@@ -10,3 +10,4 @@ tmp/
 *.Rproj
 !raw/README.md
 !data/README.md
+output/Figure3.tiff
