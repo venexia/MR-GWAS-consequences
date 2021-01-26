@@ -4,6 +4,8 @@ set seed 123
 
 * 21 simulations for different effects of phenotype A on phenotype B
 
+local X = 0
+
 forvalues mb = -1(0.1)1 {
 
 	* Specify intitial values for parameters
@@ -192,17 +194,21 @@ forvalues mb = -1(0.1)1 {
 		qui replace za`i'_se = _se[za`i'] in `res'
 	}
 	
-	* Record treatment numbers 
-	
-	count if t==1 & split==1
-	gen t1split1 = r(N)
+	* Record proprotion treated
 
 	count if t==1 & split==0
-	gen t1split0 = r(N)
+	local treated = r(N)
+	count if split==0
+	gen proportion_treated = `treated' / r(N)
+	
+	* Save simulated data
+	
+	local X = `X' + 1
+	save "data/simulation`X'.dta", replace
 	
 	* Restrict to relevant variables and the MR results
 
-	keep za0-za5_se at-cb t1split1 t1split0
+	keep za0-za5_se at-cb proportion_treated
 	keep in `res'
 
 	* Record initial values used
